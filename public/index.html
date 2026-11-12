@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#0b1020">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="엘더문">
+  <meta name="description" content="모바일 브라우저에서 즐기는 3D MMORPG">
+  <title>엘더문 온라인</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="icon.svg">
+  <link rel="stylesheet" href="css/style.css">
+  <script type="importmap">
+    { "imports": { "three": "./vendor/three/three.module.js" } }
+  </script>
+</head>
+<body>
+  <canvas id="game"></canvas>
+  <div id="labels"></div>
+
+  <!-- ===== 인게임 HUD ===== -->
+  <div id="hud" class="hidden">
+    <div id="player-frame">
+      <div class="portrait"><span id="pf-icon">🛡️</span><b id="pf-level">1</b></div>
+      <div class="pf-info">
+        <div id="pf-name">모험가</div>
+        <div class="bar hp"><i id="pf-hp"></i><span id="pf-hp-t">0/0</span></div>
+        <div class="bar mp"><i id="pf-mp"></i><span id="pf-mp-t">0/0</span></div>
+        <div id="buffs"></div>
+      </div>
+    </div>
+
+    <div id="target-frame" class="hidden">
+      <div id="tf-name">대상</div>
+      <div class="bar hp"><i id="tf-hp"></i><span id="tf-hp-t"></span></div>
+    </div>
+
+    <div id="zone-banner"><b id="zb-name"></b><small id="zb-level"></small></div>
+
+    <div id="top-right">
+      <canvas id="minimap" width="240" height="240"></canvas>
+      <div id="mm-info"><span id="mm-zone">마을</span> · <span id="ping">--</span></div>
+      <div id="menu-btns">
+        <button data-panel="inventory" title="가방">🎒</button>
+        <button data-panel="character" title="캐릭터">👤</button>
+        <button data-panel="quest" title="퀘스트">📜</button>
+        <button data-panel="map" title="지도">🗺️</button>
+        <button data-panel="settings" title="설정">⚙️</button>
+      </div>
+      <div id="quest-tracker" class="hidden"></div>
+    </div>
+
+    <div id="chat-log"></div>
+    <button id="chat-btn" title="채팅">💬</button>
+    <form id="chat-form" class="hidden" autocomplete="off">
+      <input id="chat-input" maxlength="120" placeholder="메시지를 입력하세요 (Enter)" enterkeyhint="send">
+      <button type="submit">전송</button>
+    </form>
+
+    <div id="joy-zone"><div id="joy-base"><div id="joy-knob"></div></div></div>
+
+    <button id="btn-interact" class="hidden">대화</button>
+    <div id="actions">
+      <button id="btn-auto" class="small-btn" title="자동 사냥">AUTO</button>
+      <button id="btn-target" class="small-btn" title="다음 대상">🎯</button>
+      <button id="btn-hp" class="potion" title="체력 물약"><span>🧪</span><em id="hp-count">0</em><i class="cd"></i></button>
+      <button id="btn-mp" class="potion" title="마나 물약"><span>💧</span><em id="mp-count">0</em><i class="cd"></i></button>
+      <button id="btn-s0" class="skill"><span></span><i class="cd"></i><b class="cdt"></b></button>
+      <button id="btn-s1" class="skill"><span></span><i class="cd"></i><b class="cdt"></b></button>
+      <button id="btn-s2" class="skill"><span></span><i class="cd"></i><b class="cdt"></b></button>
+      <button id="btn-attack"><span>⚔️</span></button>
+    </div>
+
+    <div id="xpbar"><i id="xp-fill"></i><span id="xp-t"></span></div>
+    <div id="toasts"></div>
+
+    <div id="death" class="hidden">
+      <h2>쓰러졌습니다</h2>
+      <p id="death-msg"></p>
+      <button id="btn-respawn" disabled>마을에서 부활 (<span id="death-count">5</span>)</button>
+    </div>
+  </div>
+
+  <!-- ===== 모달 패널 ===== -->
+  <div id="panel" class="hidden">
+    <div class="panel-box">
+      <header><h3 id="panel-title"></h3><button id="panel-close">✕</button></header>
+      <div id="panel-body"></div>
+    </div>
+  </div>
+
+  <!-- ===== 로그인 / 캐릭터 생성 ===== -->
+  <div id="login">
+    <div class="login-bg"></div>
+    <div class="login-box">
+      <h1><span class="moon">🌙</span> 엘더문 <small>ONLINE</small></h1>
+      <p class="subtitle">달빛 아래 펼쳐지는 모바일 3D MMORPG</p>
+      <div id="server-status" class="status">서버 확인 중...</div>
+
+      <div id="continue-box" class="hidden">
+        <button id="btn-continue" class="primary"></button>
+        <button id="btn-new" class="link">새 캐릭터 만들기</button>
+      </div>
+
+      <div id="create-box">
+        <label>캐릭터 이름<input id="in-name" maxlength="12" placeholder="2~12자" autocomplete="off"></label>
+        <div class="label">직업 선택</div>
+        <div id="class-list"></div>
+        <div class="label">색상</div>
+        <div id="color-list"></div>
+        <button id="btn-start" class="primary">모험 시작</button>
+      </div>
+      <div class="mode-row">
+        <label><input type="radio" name="mode" value="online" checked> 온라인 서버</label>
+        <label><input type="radio" name="mode" value="offline"> 오프라인 (혼자 하기)</label>
+      </div>
+      <p id="login-err" class="err"></p>
+      <p class="hint">📱 가로 모드 · 전체 화면을 권장합니다</p>
+    </div>
+  </div>
+
+  <div id="loading" class="hidden"><div class="spinner"></div><p id="loading-t">월드를 불러오는 중...</p></div>
+  <div id="rotate-hint">📱↻ 더 나은 플레이를 위해 가로 모드로 돌려주세요</div>
+
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>

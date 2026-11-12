@@ -1,0 +1,21 @@
+{
+  "name": "eldermoon-online",
+  "version": "1.0.0",
+  "description": "모바일 브라우저용 3D MMORPG - 엘더문 온라인",
+  "type": "module",
+  "main": "server/index.js",
+  "scripts": {
+    "start": "node server/index.js",
+    "dev": "node --watch server/index.js",
+    "test": "node scripts/smoke-test.js",
+    "build:static": "node scripts/build-static.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "three": "0.186.1",
+    "ws": "8.22.0"
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "name": "엘더문 온라인",
+  "short_name": "엘더문",
+  "description": "모바일 브라우저에서 즐기는 3D MMORPG",
+  "start_url": "./",
+  "scope": "./",
+  "display": "fullscreen",
+  "orientation": "landscape",
+  "background_color": "#0b1020",
+  "theme_color": "#0b1020",
+  "icons": [
+    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ]
+}
